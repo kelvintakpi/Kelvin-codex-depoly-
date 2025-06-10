@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+(#!/usr/bin/env python3
 """
 Kelvin Codex Quantum Computing Core — Real-Hardware Only Implementation
 All “simulator” fallbacks removed. Requires actual access to Google Quantum AI and/or IBM Quantum devices.
@@ -14,15 +14,13 @@ import cirq
 import cirq_google
 from cirq_google.engine import Engine
 from qiskit import IBMQ, QuantumCircuit, transpile, execute, ClassicalRegister, QuantumRegister
-from qiskit.providers.aer import AerSimulator
 from qiskit.quantum_info import Statevector, DensityMatrix, partial_trace
 from qiskit.circuit.library import QFT, GroverOperator
 import numpy as np
 import asyncio
 import time
-import json
 import logging
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 from abc import ABC, abstractmethod
@@ -102,19 +100,20 @@ class GroverSearchBuilder(QuantumCircuitBuilder):
         return circuit
 
     def _create_oracle(self, qubits: List[cirq.Qid], marked_states: List[int]) -> List[cirq.Operation]:
-        ops = []
+        ops: List[cirq.Operation] = []
         n = len(qubits)
         for state in marked_states:
+            # Flip qubits where bit is 0 so that marked state maps to |11...1>
             flip_ops = [cirq.X(qubits[i]) for i in range(n) if not (state & (1 << i))]
             ops.extend(flip_ops)
             if n > 1:
                 multi_z = cirq.Z(qubits[-1]).controlled_by(*qubits[:-1])
                 ops.append(multi_z)
-            ops.extend(flip_ops)
+            ops.extend(flip_ops)  # Undo X gates
         return ops
 
     def _create_diffusion_operator(self, qubits: List[cirq.Qid]) -> List[cirq.Operation]:
-        ops = []
+        ops: List[cirq.Operation] = []
         ops.extend([cirq.H(q) for q in qubits])
         ops.extend([cirq.X(q) for q in qubits])
         if len(qubits) > 1:
@@ -124,22 +123,23 @@ class GroverSearchBuilder(QuantumCircuitBuilder):
         return ops
 
     def get_classical_complexity(self, num_qubits: int) -> int:
-        return 2**num_qubits
+        return 2 ** num_qubits
 
 
 class QAOAOptimizationBuilder(QuantumCircuitBuilder):
     """Quantum Approximate Optimization Algorithm (QAOA)."""
     def build_circuit(self, num_qubits: int, p_layers: int = 3, problem_graph: List[Tuple[int, int]] = None, **kwargs) -> cirq.Circuit:
         if problem_graph is None:
-            problem_graph = [(i, (i+1) % num_qubits) for i in range(num_qubits)]
+            problem_graph = [(i, (i + 1) % num_qubits) for i in range(num_qubits)]
         qubits = cirq.LineQubit.range(num_qubits)
         circuit = cirq.Circuit()
+        # Initialize superposition
         circuit.append([cirq.H(q) for q in qubits])
         gamma_params = np.linspace(0.1, 0.8, p_layers)
         beta_params = np.linspace(0.1, 0.6, p_layers)
         for layer in range(p_layers):
-            gamma = gamma_params[layer]
-            beta = beta_params[layer]
+            gamma = float(gamma_params[layer])
+            beta = float(beta_params[layer])
             for i, j in problem_graph:
                 if i < num_qubits and j < num_qubits:
                     circuit.append(cirq.ZZ(qubits[i], qubits[j]) ** (gamma / np.pi))
@@ -148,7 +148,7 @@ class QAOAOptimizationBuilder(QuantumCircuitBuilder):
         return circuit
 
     def get_classical_complexity(self, num_qubits: int) -> int:
-        return 2**num_qubits
+        return 2 ** num_qubits
 
 
 class QuantumFourierTransformBuilder(QuantumCircuitBuilder):
@@ -166,31 +166,31 @@ class QuantumFourierTransformBuilder(QuantumCircuitBuilder):
         return circuit
 
     def _create_qft(self, qubits: List[cirq.Qid]) -> List[cirq.Operation]:
-        ops = []
+        ops: List[cirq.Operation] = []
         n = len(qubits)
         for i in range(n):
             ops.append(cirq.H(qubits[i]))
-            for j in range(i+1, n):
+            for j in range(i + 1, n):
                 angle = 2 * np.pi / (2 ** (j - i + 1))
                 ops.append(cirq.CZ(qubits[j], qubits[i]) ** (angle / np.pi))
-        for i in range(n//2):
-            ops.append(cirq.SWAP(qubits[i], qubits[n-1-i]))
+        for i in range(n // 2):
+            ops.append(cirq.SWAP(qubits[i], qubits[n - 1 - i]))
         return ops
 
     def _create_inverse_qft(self, qubits: List[cirq.Qid]) -> List[cirq.Operation]:
-        ops = []
+        ops: List[cirq.Operation] = []
         n = len(qubits)
-        for i in range(n//2):
-            ops.append(cirq.SWAP(qubits[i], qubits[n-1-i]))
-        for i in range(n-1, -1, -1):
-            for j in range(n-1, i, -1):
+        for i in range(n // 2):
+            ops.append(cirq.SWAP(qubits[i], qubits[n - 1 - i]))
+        for i in range(n - 1, -1, -1):
+            for j in range(n - 1, i, -1):
                 angle = -2 * np.pi / (2 ** (j - i + 1))
                 ops.append(cirq.CZ(qubits[j], qubits[i]) ** (angle / np.pi))
             ops.append(cirq.H(qubits[i]))
         return ops
 
     def get_classical_complexity(self, num_qubits: int) -> int:
-        return num_qubits * 2**num_qubits
+        return num_qubits * 2 ** num_qubits
 
 
 class QuantumNeuralNetworkBuilder(QuantumCircuitBuilder):
@@ -203,9 +203,9 @@ class QuantumNeuralNetworkBuilder(QuantumCircuitBuilder):
             circuit.append(cirq.ry(angle * np.pi).on(qubits[i]))
         for _ in range(num_layers):
             for i in range(num_qubits - 1):
-                circuit.append(cirq.CNOT(qubits[i], qubits[i+1]))
-            theta_params = np.random.uniform(0, 2*np.pi, num_qubits)
-            phi_params = np.random.uniform(0, 2*np.pi, num_qubits)
+                circuit.append(cirq.CNOT(qubits[i], qubits[i + 1]))
+            theta_params = np.random.uniform(0, 2 * np.pi, num_qubits)
+            phi_params = np.random.uniform(0, 2 * np.pi, num_qubits)
             for i, (theta, phi) in enumerate(zip(theta_params, phi_params)):
                 circuit.append(cirq.ry(theta).on(qubits[i]))
                 circuit.append(cirq.rz(phi).on(qubits[i]))
@@ -213,7 +213,7 @@ class QuantumNeuralNetworkBuilder(QuantumCircuitBuilder):
         return circuit
 
     def get_classical_complexity(self, num_qubits: int) -> int:
-        return num_qubits**3
+        return num_qubits ** 3
 
 
 class QuantumWalkBuilder(QuantumCircuitBuilder):
@@ -235,7 +235,7 @@ class QuantumWalkBuilder(QuantumCircuitBuilder):
                     circuit.append(cirq.CNOT(coin_q, position_qubits[i]))
                     circuit.append(cirq.X(coin_q))
                     if i > 0:
-                        circuit.append(cirq.CNOT(coin_q, position_qubits[i-1]))
+                        circuit.append(cirq.CNOT(coin_q, position_qubits[i - 1]))
                     circuit.append(cirq.X(coin_q))
             circuit.append([cirq.H(q) for q in coin_qubits_list])
         all_qubits = list(position_qubits) + list(coin_qubits_list)
@@ -243,7 +243,7 @@ class QuantumWalkBuilder(QuantumCircuitBuilder):
         return circuit
 
     def get_classical_complexity(self, num_qubits: int) -> int:
-        return 2**(num_qubits // 2)
+        return 2 ** (num_qubits // 2)
 
 
 # -------------------------------------------------------------------
@@ -431,7 +431,7 @@ class QuantumHardwareManager:
         return qc
 
     def _calculate_quantum_volume(self, num_qubits: int, depth: int) -> int:
-        return min(num_qubits, depth)**2
+        return min(num_qubits, depth) ** 2
 
 
 # -------------------------------------------------------------------
@@ -548,7 +548,7 @@ class QuantumFinancialController:
         circuit.append(cirq.Z(qubits[-1]).controlled_by(*qubits[:-1]))
         circuit.append([cirq.measure(q, key=f"m{i}") for i, q in enumerate(qubits)])
         result: QuantumResult = await self.hardware_manager.execute_quantum_circuit(
-            circuit_type="grover_search",  # reuse GroverSearchBuilder for structure
+            circuit_type="grover_search",
             num_qubits=num_qubits,
             provider=provider
         )
@@ -568,7 +568,7 @@ class QuantumFinancialController:
             circuit.append(cirq.rz(angle).on(q))
         circuit.append([cirq.measure(q, key=f"m{i}") for i, q in enumerate(qubits)])
         result: QuantumResult = await self.hardware_manager.execute_quantum_circuit(
-            circuit_type="quantum_fourier_transform",  # placeholder
+            circuit_type="quantum_fourier_transform",
             num_qubits=num_qubits,
             provider=provider
         )
@@ -588,7 +588,7 @@ class QuantumFinancialController:
         circuit.append([cirq.H(q) for q in qubits])
         circuit.append([cirq.measure(q, key=f"m{i}") for i, q in enumerate(qubits)])
         result: QuantumResult = await self.hardware_manager.execute_quantum_circuit(
-            circuit_type="quantum_neural_network",  # placeholder
+            circuit_type="quantum_neural_network",
             num_qubits=num_qubits,
             provider=provider
         )
@@ -619,7 +619,6 @@ class DegumzaIntegrator:
         )
         dominant = result["analysis"]["dominant_states"][0][0]
         mapping = {"0": "Home Win", "1": "Away Win", "2": "Draw"}
-        # Map first bit to outcome
         prediction = mapping.get(dominant[0], "Home Win")
         return {"prediction": prediction, "quantum_result": result["quantum_result"]}
 
@@ -687,7 +686,7 @@ class LlamaRequest(BaseModel):
 app = FastAPI(title="Kelvin Codex Quantum Core (Real-Hardware Only)")
 
 hardware_manager = QuantumHardwareManager()
-# Insert real credentials below:
+# Insert real credentials below before running:
 # hardware_manager.setup_google_quantum(project_id="YOUR_GOOGLE_PROJECT_ID", processor_id="rainbow")
 # hardware_manager.setup_ibm_quantum(token="YOUR_IBM_TOKEN", hub="ibm-q", group="open", project="main")
 
@@ -884,3 +883,4 @@ async def dashboard():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("kelvin_codex_quantum_core_real:app", host="0.0.0.0", port=8000, reload=False)
+ )
