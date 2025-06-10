@@ -1,0 +1,8 @@
+cirq
+cirq-google
+qiskit
+qiskit-ibmq-provider
+fastapi
+uvicorn
+numpy
+scipy
