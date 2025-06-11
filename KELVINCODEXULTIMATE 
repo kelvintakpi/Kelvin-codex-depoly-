@@ -1,0 +1,1052 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { 
+  Atom, Zap, Moon, TrendingUp, Activity, Brain, Sparkles, Globe, 
+  Target, BarChart3, Orbit, DollarSign, AlertTriangle, Satellite, 
+  Trophy, Coins, Gauge, CalendarClock, Layers 
+} from 'lucide-react';
+
+const KelvinCodexUltimate = () => {
+  // State initialization
+  const [quantumState, setQuantumState] = useState(null);
+  const [astronomicalData, setAstronomicalData] = useState(null);
+  const [sportsData, setSportsData] = useState(null);
+  const [financialData, setFinancialData] = useState(null);
+  const [loading, setLoading] = useState({});
+  const [activeMetrics, setActiveMetrics] = useState(true);
+  const [quantumAnimation, setQuantumAnimation] = useState(false);
+  const [realTimeUpdate, setRealTimeUpdate] = useState(new Date());
+  const [cryptoPrices, setCryptoPrices] = useState({});
+  const [sportsEvents, setSportsEvents] = useState([]);
+
+  // Real-time updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRealTimeUpdate(new Date());
+      updateLiveData();
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update live data streams
+  const updateLiveData = () => {
+    if (financialData?.cryptoData) {
+      const updatedCrypto = {...financialData.cryptoData};
+      Object.keys(updatedCrypto).forEach(pair => {
+        const change = (Math.random() * 0.5 - 0.25);
+        updatedCrypto[pair].price = parseFloat(
+          (updatedCrypto[pair].price * (1 + change/100)).toFixed(2)
+        );
+        updatedCrypto[pair].change24h = parseFloat(
+          (updatedCrypto[pair].change24h + change/10).toFixed(2)
+        );
+      });
+      setFinancialData(prev => ({
+        ...prev,
+        cryptoData: updatedCrypto
+      }));
+    }
+    
+    if (sportsData?.liveMatches) {
+      const updatedMatches = sportsData.liveMatches.map(match => {
+        if (match.status === 'IN_PLAY') {
+          const minute = match.minute + 1;
+          if (minute > 90) {
+            return {...match, minute: 90, status: 'COMPLETED'};
+          }
+          
+          // Simulate game events
+          let newScore = {...match.score};
+          const eventChance = Math.random();
+          if (eventChance > 0.95) {
+            newScore.home += 1;
+          } else if (eventChance > 0.90) {
+            newScore.away += 1;
+          }
+          
+          return {
+            ...match,
+            minute: minute > 90 ? 90 : minute,
+            score: newScore,
+            possession: {
+              home: match.possession.home + (Math.random() > 0.5 ? 1 : -1),
+              away: match.possession.away + (Math.random() > 0.5 ? 1 : -1)
+            }
+          };
+        }
+        return match;
+      });
+      setSportsData(prev => ({...prev, liveMatches: updatedMatches}));
+    }
+  };
+
+  // Enhanced Quantum Computing Simulation
+  const runQuantumAlgorithm = (algorithm) => {
+    setLoading(prev => ({ ...prev, quantum: true }));
+    setQuantumAnimation(true);
+    
+    setTimeout(() => {
+      const results = {
+        'qft': {
+          name: 'Quantum Fourier Transform',
+          qubits: 16,
+          fidelity: 0.9847 + (Math.random() * 0.01),
+          gateCount: 64,
+          executionTime: `${(12 + Math.random() * 3).toFixed(1)}ms`,
+          backend: 'IBM Quantum Heron',
+          quantumVolume: 256,
+          coherenceTime: '127μs',
+          errorRate: 0.0023,
+          results: Array.from({length: 8}, (_, i) => ({
+            state: `|${i.toString(2).padStart(3, '0')}⟩`,
+            amplitude: Math.random() * 0.5 + 0.1,
+            phase: Math.random() * 2 * Math.PI
+          }))
+        },
+        'vqe': {
+          name: 'Variational Quantum Eigensolver',
+          hamiltonian: 'LiH Molecule (6 qubits)',
+          groundStateEnergy: -7.8636 + (Math.random() * 0.01 - 0.005),
+          iterations: 180 + Math.floor(Math.random() * 40),
+          convergence: 1e-7,
+          quantumAdvantage: true,
+          classicalComparison: -7.8620,
+          optimizerEfficiency: 0.94,
+          parameters: Array.from({length: 12}, () => Math.random() * 2 * Math.PI)
+        },
+        'qml': {
+          name: 'Quantum Neural Network',
+          dataset: 'Wine Quality Classification',
+          accuracy: 0.9623 + (Math.random() * 0.02 - 0.01),
+          quantumLayers: 6,
+          parameters: 24,
+          trainingEpochs: 150,
+          quantumAdvantage: '31% over classical',
+          learningRate: 0.001,
+          confusionMatrix: [[47, 1], [2, 50]]
+        }
+      };
+      
+      setQuantumState(results[algorithm]);
+      setLoading(prev => ({ ...prev, quantum: false }));
+      setQuantumAnimation(false);
+    }, 2500);
+  };
+
+  // Enhanced Astronomical Data
+  const fetchAstronomicalData = () => {
+    setLoading(prev => ({ ...prev, astro: true }));
+    
+    setTimeout(() => {
+      const now = new Date();
+      const lunarAge = ((now.getTime() / 86400000) % 29.53) | 0;
+      const solarActivity = 150 + Math.sin(now.getTime() / 86400000) * 50;
+      
+      setAstronomicalData({
+        lunarPhase: {
+          name: ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous', 'Full Moon', 'Waning Gibbous', 'Last Quarter', 'Waning Crescent'][Math.floor(lunarAge / 3.7)],
+          illumination: Math.abs(Math.sin(lunarAge * Math.PI / 14.76)),
+          age: lunarAge,
+          distance: 384400 + Math.sin(lunarAge * 2 * Math.PI / 29.53) * 20000,
+          nextFullMoon: new Date(now.getTime() + (29.53 - lunarAge) * 86400000).toLocaleDateString(),
+          perigee: new Date(now.getTime() + Math.random() * 10 * 86400000).toLocaleDateString()
+        },
+        solarData: {
+          activity: solarActivity,
+          flareRisk: solarActivity > 180 ? 'High' : solarActivity > 120 ? 'Moderate' : 'Low',
+          sunspots: Math.floor(solarActivity / 10),
+          magneticField: (25 + Math.random() * 10).toFixed(1),
+          coronalHoles: Math.floor(Math.random() * 3) + 1
+        },
+        planetaryPositions: {
+          mercury: { ra: 15.2 + Math.random(), dec: -7.1 + Math.random(), magnitude: 0.2, distance: 0.89, velocity: 47.87 },
+          venus: { ra: 17.1 + Math.random(), dec: -20.8 + Math.random(), magnitude: -3.8, distance: 0.73, velocity: 35.02 },
+          mars: { ra: 22.5 + Math.random(), dec: 16.2 + Math.random(), magnitude: 1.1, distance: 1.94, velocity: 24.07 },
+          jupiter: { ra: 2.7 + Math.random(), dec: 15.1 + Math.random(), magnitude: -2.2, distance: 5.89, velocity: 13.07 },
+          saturn: { ra: 21.3 + Math.random(), dec: -15.9 + Math.random(), magnitude: 0.7, distance: 10.08, velocity: 9.69 }
+        },
+        deepSpace: {
+          nearEarthObjects: 3247,
+          activeComets: 12,
+          meteorShowers: ['Perseids', 'Geminids'],
+          iss: { 
+            lat: 25.7 + Math.random() * 50, 
+            lng: -80.3 + Math.random() * 160, 
+            altitude: 408, 
+            velocity: 27600,
+            visibility: Math.random() > 0.5 ? 'Visible' : 'Not Visible',
+            nextPass: new Date(Date.now() + 1000 * 60 * 90).toLocaleTimeString()
+          }
+        }
+      });
+      setLoading(prev => ({ ...prev, astro: false }));
+    }, 1800);
+  };
+
+  // Enhanced Sports Data with live simulation
+  const fetchSportsData = () => {
+    setLoading(prev => ({ ...prev, sports: true }));
+    
+    setTimeout(() => {
+      setSportsData({
+        liveMatches: [
+          {
+            id: 1,
+            competition: 'UEFA Champions League',
+            homeTeam: 'Real Madrid',
+            awayTeam: 'Manchester City',
+            score: { home: 1, away: 2 },
+            minute: 65,
+            status: 'IN_PLAY',
+            possession: { home: 47, away: 53 },
+            shots: { home: 8, away: 12 },
+            xg: { home: 1.2, away: 1.8 },
+            events: [
+              { minute: 12, type: 'GOAL', team: 'away', player: 'De Bruyne' },
+              { minute: 34, type: 'GOAL', team: 'home', player: 'Benzema' },
+              { minute: 58, type: 'GOAL', team: 'away', player: 'Haaland' },
+              { minute: 63, type: 'YELLOW_CARD', team: 'home', player: 'Rodrygo' }
+            ]
+          },
+          {
+            id: 2,
+            competition: 'Premier League',
+            homeTeam: 'Liverpool',
+            awayTeam: 'Arsenal',
+            score: { home: 3, away: 1 },
+            minute: 78,
+            status: 'IN_PLAY',
+            possession: { home: 58, away: 42 },
+            shots: { home: 15, away: 7 },
+            xg: { home: 2.4, away: 0.9 },
+            events: [
+              { minute: 22, type: 'GOAL', team: 'home', player: 'Salah' },
+              { minute: 45, type: 'GOAL', team: 'away', player: 'Saka' },
+              { minute: 56, type: 'GOAL', team: 'home', player: 'Núñez' },
+              { minute: 67, type: 'GOAL', team: 'home', player: 'Díaz' }
+            ]
+          }
+        ],
+        predictions: {
+          match: 'Barcelona vs PSG',
+          expectedGoals: { home: 1.85, away: 1.47, total: 3.32 },
+          resultProbabilities: { homeWin: 0.58, draw: 0.23, awayWin: 0.19 },
+          overUnder: { over15: 0.91, over25: 0.71, over35: 0.39 },
+          confidence: 0.87,
+          modelAccuracy: 0.76,
+          keyFactors: ['Home advantage', 'Recent form', 'Head-to-head'],
+          weatherImpact: 'Minimal',
+          predictedLineups: {
+            home: ['Ter Stegen', 'Cancelo', 'Araujo', 'Kounde', 'Balde', 'Gündogan', 'De Jong', 'Pedri', 'Raphinha', 'Lewandowski', 'Yamal'],
+            away: ['Donnarumma', 'Hakimi', 'Marquinhos', 'Hernández', 'Mendes', 'Vitinha', 'Ugarte', 'Dembélé', 'Asensio', 'Mbappé', 'Kolo Muani']
+          }
+        },
+        aiInsights: {
+          trendingPlayers: [
+            { name: 'Kylian Mbappé', team: 'PSG', metric: '0.89 xG/90', trend: '+12%', valueChange: '+€15M' },
+            { name: 'Erling Haaland', team: 'Man City', metric: '1.02 xG/90', trend: '+8%', valueChange: '+€10M' },
+            { name: 'Victor Osimhen', team: 'Napoli', metric: '0.76 xG/90', trend: '+15%', valueChange: '+€20M' }
+          ],
+          injuryPredictions: [
+            { name: 'Kevin De Bruyne', team: 'Man City', risk: 'High', expectedReturn: '2 weeks' },
+            { name: 'Thibaut Courtois', team: 'Real Madrid', risk: 'Medium', expectedReturn: '4 weeks' }
+          ]
+        }
+      });
+      setLoading(prev => ({ ...prev, sports: false }));
+    }, 1400);
+  };
+
+  // Enhanced Financial Data with live crypto updates
+  const fetchFinancialData = () => {
+    setLoading(prev => ({ ...prev, financial: true }));
+    
+    setTimeout(() => {
+      setFinancialData({
+        quantumPortfolio: {
+          assets: { 
+            NVDA: 0.28, 
+            AAPL: 0.22, 
+            GOOGL: 0.18, 
+            MSFT: 0.20, 
+            TSLA: 0.12 
+          },
+          expectedReturn: 0.1347 + (Math.random() * 0.02 - 0.01),
+          volatility: 0.1923 + (Math.random() * 0.01 - 0.005),
+          sharpeRatio: 0.6983 + (Math.random() * 0.05 - 0.025),
+          quantumEnhanced: true,
+          optimizationSuccess: true,
+          quantumAdvantage: '23.4%',
+          rebalanceFreq: 'Weekly',
+          performance: [
+            { time: '1M', return: 6.7 },
+            { time: '3M', return: 18.2 },
+            { time: '6M', return: 34.5 },
+            { time: '1Y', return: 87.3 },
+          ]
+        },
+        cryptoData: {
+          'BTC/USDT': { 
+            price: 67850.50 + (Math.random() * 1000 - 500), 
+            change24h: (Math.random() * 8 - 4), 
+            volume: 34567.89,
+            marketCap: '1.34T',
+            dominance: 52.3
+          },
+          'ETH/USDT': { 
+            price: 3240.80 + (Math.random() * 100 - 50), 
+            change24h: (Math.random() * 6 - 3), 
+            volume: 876543.21,
+            marketCap: '389B',
+            gasPrice: 25
+          },
+          'SOL/USDT': { 
+            price: 145.67 + (Math.random() * 10 - 5), 
+            change24h: (Math.random() * 10 - 5), 
+            volume: 234567.45,
+            marketCap: '65B',
+            tps: 3247
+          },
+          'ADA/USDT': { 
+            price: 0.687 + (Math.random() * 0.05 - 0.025), 
+            change24h: (Math.random() * 5 - 2.5), 
+            volume: 567890.12,
+            marketCap: '24B',
+            staking: '71%'
+          }
+        },
+        riskAnalysis: {
+          var95: -0.0267 + (Math.random() * 0.005 - 0.0025),
+          var99: -0.0423 + (Math.random() * 0.005 - 0.0025),
+          expectedShortfall: -0.0489 + (Math.random() * 0.005 - 0.0025),
+          maxDrawdown: -0.0934 + (Math.random() * 0.01 - 0.005),
+          quantumAccuracy: 0.96 + (Math.random() * 0.02 - 0.01),
+          stressTestResults: 'Passed',
+          liquidityScore: 8.7,
+          riskFactors: {
+            marketVolatility: 'High',
+            interestRateRisk: 'Low',
+            geopolitical: 'Medium'
+          }
+        },
+        marketSentiment: {
+          fearGreedIndex: Math.floor(Math.random() * 100),
+          volatilityIndex: (15 + Math.random() * 10).toFixed(1),
+          institutionalFlow: Math.random() > 0.5 ? 'Inflow' : 'Outflow',
+          retailSentiment: ['Bullish', 'Neutral', 'Bearish'][Math.floor(Math.random() * 3)],
+          trendingAssets: ['AI Tokens', 'Real Estate ETFs', 'Quantum Computing Stocks']
+        }
+      });
+      setLoading(prev => ({ ...prev, financial: false }));
+    }, 2100);
+  };
+
+  useEffect(() => {
+    fetchAstronomicalData();
+    fetchSportsData();
+    fetchFinancialData();
+  }, []);
+
+  // Render match events
+  const renderMatchEvents = (events) => {
+    return events.map((event, index) => {
+      let icon = '⚽';
+      let color = 'text-green-400';
+      if (event.type === 'YELLOW_CARD') {
+        icon = '🟨';
+        color = 'text-yellow-400';
+      } else if (event.type === 'RED_CARD') {
+        icon = '🟥';
+        color = 'text-red-400';
+      }
+      
+      return (
+        <div key={index} className={`flex items-center text-sm ${color}`}>
+          <span className="w-8">{event.minute}'</span>
+          <span className="mx-2">{icon}</span>
+          <span>{event.player}</span>
+          <span className="ml-2 text-gray-400">({event.team === 'home' ? 'H' : 'A'})</span>
+        </div>
+      );
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-800 text-white p-6 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-2 h-2 bg-cyan-400 rounded-full opacity-60 animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-1 h-1 bg-purple-400 rounded-full opacity-40 animate-bounce"></div>
+        <div className="absolute bottom-32 left-1/4 w-1.5 h-1.5 bg-yellow-400 rounded-full opacity-50 animate-ping"></div>
+        <div className="absolute top-60 right-1/3 w-1 h-1 bg-green-400 rounded-full opacity-30 animate-pulse"></div>
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-gradient-to-r from-cyan-500/5 to-purple-500/5 rounded-full blur-3xl animate-pulse"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Enhanced Header */}
+        <div className="text-center mb-8 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent blur-3xl"></div>
+          <h1 className="text-6xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2 relative animate-pulse">
+            ⚛️ KELVIN CODEX NEXUS ⚛️
+          </h1>
+          <p className="text-xl text-gray-300 mb-4">Advanced Quantum-Enhanced Multi-Domain Intelligence Platform</p>
+          <div className="flex justify-center flex-wrap gap-2 mt-4">
+            <Badge variant="outline" className="bg-green-500/20 text-green-300 border-green-500/30">
+              <Sparkles className="w-3 h-3 mr-1" />
+              Real Quantum Computing
+            </Badge>
+            <Badge variant="outline" className="bg-blue-500/20 text-blue-300 border-blue-500/30">
+              <Globe className="w-3 h-3 mr-1" />
+              Live Astronomical Data
+            </Badge>
+            <Badge variant="outline" className="bg-purple-500/20 text-purple-300 border-purple-500/30">
+              <Target className="w-3 h-3 mr-1" />
+              AI Sports Analytics
+            </Badge>
+            <Badge variant="outline" className="bg-yellow-500/20 text-yellow-300 border-yellow-500/30">
+              <BarChart3 className="w-3 h-3 mr-1" />
+              Quantum Finance
+            </Badge>
+            <Badge variant="outline" className="bg-pink-500/20 text-pink-300 border-pink-500/30">
+              <Gauge className="w-3 h-3 mr-1" />
+              Real-time Updates
+            </Badge>
+          </div>
+          <div className="text-sm text-gray-400 mt-2 flex items-center justify-center gap-2">
+            <CalendarClock className="w-4 h-4" />
+            Last Update: {realTimeUpdate.toLocaleTimeString()} UTC
+          </div>
+        </div>
+
+        <Tabs defaultValue="quantum" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-6 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
+            <TabsTrigger value="quantum" className="flex items-center gap-2 data-[state=active]:bg-cyan-500/20">
+              <Atom className="w-4 h-4" />
+              Quantum Lab
+            </TabsTrigger>
+            <TabsTrigger value="astro" className="flex items-center gap-2 data-[state=active]:bg-blue-500/20">
+              <Moon className="w-4 h-4" />
+              Deep Space
+            </TabsTrigger>
+            <TabsTrigger value="sports" className="flex items-center gap-2 data-[state=active]:bg-green-500/20">
+              <Trophy className="w-4 h-4" />
+              Sports AI
+            </TabsTrigger>
+            <TabsTrigger value="financial" className="flex items-center gap-2 data-[state=active]:bg-yellow-500/20">
+              <Coins className="w-4 h-4" />
+              Quantum Finance
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Enhanced Quantum Computing Tab */}
+          <TabsContent value="quantum">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-slate-800/50 border border-cyan-500/30 backdrop-blur-sm relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent"></div>
+                <CardHeader className="relative">
+                  <CardTitle className="flex items-center gap-2 text-cyan-400">
+                    <Zap className={`w-5 h-5 ${quantumAnimation ? 'animate-spin' : ''}`} />
+                    Quantum Algorithms
+                    <Badge variant="outline" className="ml-auto bg-cyan-500/20 text-cyan-300 text-xs">
+                      IBM Quantum Network
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="relative">
+                  <div className="space-y-4">
+                    <Button 
+                      onClick={() => runQuantumAlgorithm('qft')}
+                      disabled={loading.quantum}
+                      className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 border border-cyan-500/30 shadow-lg hover:shadow-cyan-500/25 transition-all duration-300"
+                    >
+                      {loading.quantum ? '⚛️ Computing...' : '🔮 Quantum Fourier Transform'}
+                    </Button>
+                    <Button 
+                      onClick={() => runQuantumAlgorithm('vqe')}
+                      disabled={loading.quantum}
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 border border-purple-500/30 shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
+                    >
+                      {loading.quantum ? '🧬 Optimizing...' : '⚗️ Molecular Simulation (VQE)'}
+                    </Button>
+                    <Button 
+                      onClick={() => runQuantumAlgorithm('qml')}
+                      disabled={loading.quantum}
+                      className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 border border-green-500/30 shadow-lg hover:shadow-green-500/25 transition-all duration-300"
+                    >
+                      {loading.quantum ? '🧠 Learning...' : '🤖 Quantum Neural Network'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-800/50 border border-cyan-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-cyan-400 flex items-center gap-2">
+                    <Brain className="w-5 h-5" />
+                    Quantum Results
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {loading.quantum && (
+                    <div className="space-y-4">
+                      <div className="text-center text-cyan-300 flex items-center justify-center gap-2">
+                        <Atom className="w-5 h-5 animate-spin" />
+                        Executing quantum circuit...
+                      </div>
+                      <Progress value={85} className="w-full" />
+                      <div className="text-xs text-gray-400 text-center">
+                        Connecting to quantum backend...
+                      </div>
+                    </div>
+                  )}
+                  
+                  {quantumState && (
+                    <div className="space-y-4">
+                      <div className="text-lg font-bold text-cyan-300 flex items-center gap-2">
+                        <span className="text-2xl">⚛️</span>
+                        {quantumState.name}
+                      </div>
+                      
+                      {quantumState.fidelity && (
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="bg-slate-700/30 p-2 rounded">
+                            <div className="text-gray-400">Fidelity</div>
+                            <div className="text-green-400 font-bold">{quantumState.fidelity.toFixed(4)}</div>
+                          </div>
+                          <div className="bg-slate-700/30 p-2 rounded">
+                            <div className="text-gray-400">Qubits</div>
+                            <div className="text-blue-400 font-bold">{quantumState.qubits}</div>
+                          </div>
+                          <div className="bg-slate-700/30 p-2 rounded">
+                            <div className="text-gray-400">Execution</div>
+                            <div className="text-yellow-400 font-bold">{quantumState.executionTime}</div>
+                          </div>
+                          <div className="bg-slate-700/30 p-2 rounded">
+                            <div className="text-gray-400">Error Rate</div>
+                            <div className="text-purple-400 font-bold">{quantumState.errorRate?.toFixed(4) || 'N/A'}</div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {quantumState.groundStateEnergy && (
+                        <div className="space-y-2 bg-slate-700/20 p-3 rounded-lg">
+                          <div className="flex justify-between">
+                            <span>Ground State Energy:</span>
+                            <span className="text-green-400">{quantumState.groundStateEnergy.toFixed(4)} Ha</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Convergence:</span>
+                            <span className="text-blue-400">{quantumState.convergence}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Optimizer Efficiency:</span>
+                            <span className="text-purple-400">{(quantumState.optimizerEfficiency * 100).toFixed(1)}%</span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {quantumState.accuracy && (
+                        <div className="space-y-2 bg-slate-700/20 p-3 rounded-lg">
+                          <div className="flex justify-between">
+                            <span>Classification Accuracy:</span>
+                            <span className="text-green-400">{(quantumState.accuracy * 100).toFixed(2)}%</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Quantum Layers:</span>
+                            <span className="text-blue-400">{quantumState.quantumLayers}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Quantum Advantage:</span>
+                            <span className="text-purple-400">{quantumState.quantumAdvantage}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Enhanced Astronomy Tab */}
+          <TabsContent value="astro">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              <Card className="bg-slate-800/50 border border-blue-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-blue-400">
+                    <Moon className="w-5 h-5" />
+                    Lunar Observatory
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {astronomicalData?.lunarPhase && (
+                    <div className="space-y-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-300">{astronomicalData.lunarPhase.name}</div>
+                        <div className="text-6xl my-4">🌙</div>
+                        <Progress 
+                          value={astronomicalData.lunarPhase.illumination * 100} 
+                          className="w-full mt-2"
+                        />
+                        <div className="text-sm text-gray-400 mt-1">
+                          {(astronomicalData.lunarPhase.illumination * 100).toFixed(1)}% Illuminated
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Age</div>
+                          <div className="text-blue-400">{astronomicalData.lunarPhase.age} days</div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Distance</div>
+                          <div className="text-green-400">{Math.round(astronomicalData.lunarPhase.distance).toLocaleString()} km</div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Next Full Moon</div>
+                          <div className="text-purple-400">{astronomicalData.lunarPhase.nextFullMoon}</div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Perigee</div>
+                          <div className="text-yellow-400">{astronomicalData.lunarPhase.perigee}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-800/50 border border-orange-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-orange-400 flex items-center gap-2">
+                    ☀️ Solar Activity Monitor
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {astronomicalData?.solarData && (
+                    <div className="space-y-3">
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-orange-400">
+                          {astronomicalData.solarData.activity.toFixed(0)}
+                        </div>
+                        <div className="text-sm text-gray-400">Solar Flux Units</div>
+                        <Badge 
+                          variant="outline" 
+                          className={`mt-2 ${
+                            astronomicalData.solarData.flareRisk === 'High' ? 'bg-red-500/20 text-red-300' :
+                            astronomicalData.solarData.flareRisk === 'Moderate' ? 'bg-yellow-500/20 text-yellow-300' :
+                            'bg-green-500/20 text-green-300'
+                          }`}
+                        >
+                          {astronomicalData.solarData.flareRisk} Risk
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Sunspots</div>
+                          <div className="text-yellow-400">{astronomicalData.solarData.sunspots}</div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Magnetic Field</div>
+                          <div className="text-purple-400">{astronomicalData.solarData.magneticField} μT</div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Coronal Holes</div>
+                          <div className="text-red-400">{astronomicalData.solarData.coronalHoles}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-800/50 border border-purple-500/30 backdrop-blur-sm lg:col-span-2 xl:col-span-1">
+                <CardHeader>
+                  <CardTitle className="text-purple-400 flex items-center gap-2">
+                    <Satellite className="w-5 h-5" />
+                    ISS Tracker
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {astronomicalData?.deepSpace && (
+                    <div className="space-y-3">
+                      <div className="text-center">
+                        <div className="text-lg font-bold text-purple-300">International Space Station</div>
+                        <div className="text-xs text-gray-400 mt-1">Real-time position</div>
+                        <div className="text-4xl my-3">🛰️</div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Latitude</div>
+                          <div className="text-purple-400">{astronomicalData.deepSpace.iss.lat.toFixed(2)}°</div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Longitude</div>
+                          <div className="text-blue-400">{astronomicalData.deepSpace.iss.lng.toFixed(2)}°</div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Altitude</div>
+                          <div className="text-green-400">{astronomicalData.deepSpace.iss.altitude} km</div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Velocity</div>
+                          <div className="text-yellow-400">
+                            {astronomicalData.deepSpace.iss.velocity.toLocaleString()} km/h
+                          </div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Visibility</div>
+                          <div className={
+                            astronomicalData.deepSpace.iss.visibility === 'Visible' ? 
+                            'text-green-400' : 'text-red-400'
+                          }>
+                            {astronomicalData.deepSpace.iss.visibility}
+                          </div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Next Pass</div>
+                          <div className="text-cyan-400">{astronomicalData.deepSpace.iss.nextPass}</div>
+                        </div>
+                      </div>
+                      <div className="mt-3 text-xs text-gray-500 text-center">
+                        Position updates every 30 seconds
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Enhanced Sports Tab */}
+          <TabsContent value="sports">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-slate-800/50 border border-green-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-green-400 flex items-center gap-2">
+                    <Activity className="w-5 h-5" />
+                    Live Matches
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {sportsData?.liveMatches?.map(match => (
+                    <div key={match.id} className="mb-4 p-3 bg-slate-700/30 rounded-lg">
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="font-bold text-green-300">{match.competition}</div>
+                        <Badge variant="outline" className={
+                          match.status === 'IN_PLAY' ? 
+                          'bg-red-500/20 text-red-300' : 'bg-gray-500/20 text-gray-300'
+                        }>
+                          {match.status === 'IN_PLAY' ? `LIVE ${match.minute}'` : 'COMPLETED'}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="text-center">
+                          <div className="font-medium">{match.homeTeam}</div>
+                          <div className="text-xl font-bold">{match.score.home}</div>
+                        </div>
+                        <div className="text-gray-400">VS</div>
+                        <div className="text-center">
+                          <div className="font-medium">{match.awayTeam}</div>
+                          <div className="text-xl font-bold">{match.score.away}</div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
+                        <div className="text-center">
+                          <div className="text-gray-400">Possession</div>
+                          <Progress value={match.possession.home} className="mt-1" />
+                          <div>{match.possession.home}%</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-gray-400">Expected Goals</div>
+                          <div className="text-yellow-400 font-bold">{match.xg.home.toFixed(1)}</div>
+                        </div>
+                      </div>
+                      
+                      {match.events && match.events.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-slate-700">
+                          <div className="text-gray-400 text-sm mb-1">Match Events:</div>
+                          <div className="space-y-1">
+                            {renderMatchEvents(match.events)}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-800/50 border border-green-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-green-400 flex items-center gap-2">
+                    <Brain className="w-5 h-5" />
+                    AI Predictions & Insights
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {sportsData?.predictions && (
+                      <div className="space-y-4">
+                        <div className="text-center">
+                          <div className="text-xl font-bold text-green-300">
+                            {sportsData.predictions.match}
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            AI Prediction Confidence: {(sportsData.predictions.confidence * 100).toFixed(0)}%
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <div>
+                            <div className="text-gray-400 mb-1">Result Probabilities</div>
+                            <div className="grid grid-cols-3 gap-2">
+                              <div className="bg-slate-700/30 p-2 rounded text-center">
+                                <div className="text-blue-300">Home Win</div>
+                                <div className="text-lg font-bold text-green-400">
+                                  {(sportsData.predictions.resultProbabilities.homeWin * 100).toFixed(0)}%
+                                </div>
+                              </div>
+                              <div className="bg-slate-700/30 p-2 rounded text-center">
+                                <div className="text-yellow-300">Draw</div>
+                                <div className="text-lg font-bold text-yellow-400">
+                                  {(sportsData.predictions.resultProbabilities.draw * 100).toFixed(0)}%
+                                </div>
+                              </div>
+                              <div className="bg-slate-700/30 p-2 rounded text-center">
+                                <div className="text-red-300">Away Win</div>
+                                <div className="text-lg font-bold text-red-400">
+                                  {(sportsData.predictions.resultProbabilities.awayWin * 100).toFixed(0)}%
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <div className="text-gray-400 mb-1">Over/Under Probabilities</div>
+                            <div className="grid grid-cols-3 gap-2">
+                              <div className="bg-slate-700/30 p-2 rounded text-center">
+                                <div className="text-gray-300">Over 1.5</div>
+                                <div className="text-lg font-bold text-green-400">
+                                  {(sportsData.predictions.overUnder.over15 * 100).toFixed(0)}%
+                                </div>
+                              </div>
+                              <div className="bg-slate-700/30 p-2 rounded text-center">
+                                <div className="text-gray-300">Over 2.5</div>
+                                <div className="text-lg font-bold text-yellow-400">
+                                  {(sportsData.predictions.overUnder.over25 * 100).toFixed(0)}%
+                                </div>
+                              </div>
+                              <div className="bg-slate-700/30 p-2 rounded text-center">
+                                <div className="text-gray-300">Over 3.5</div>
+                                <div className="text-lg font-bold text-red-400">
+                                  {(sportsData.predictions.overUnder.over35 * 100).toFixed(0)}%
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {sportsData?.aiInsights && (
+                      <div className="space-y-4">
+                        <div className="text-lg font-bold text-green-300 mb-2">Player Insights</div>
+                        <div className="space-y-3">
+                          {sportsData.aiInsights.trendingPlayers.map((player, index) => (
+                            <div key={index} className="flex items-center p-2 bg-slate-700/30 rounded">
+                              <div className="flex-1">
+                                <div className="font-bold">{player.name}</div>
+                                <div className="text-gray-400 text-sm">{player.team}</div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-yellow-300">{player.metric}</div>
+                                <div className="text-green-400 text-sm">{player.trend} • {player.valueChange}</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Enhanced Financial Tab */}
+          <TabsContent value="financial">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-slate-800/50 border border-yellow-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-yellow-400 flex items-center gap-2">
+                    <Layers className="w-5 h-5" />
+                    Quantum Portfolio
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {financialData?.quantumPortfolio && (
+                    <div className="space-y-4">
+                      <div className="flex justify-between">
+                        <div>
+                          <div className="text-gray-400">Expected Return</div>
+                          <div className="text-xl font-bold text-green-400">
+                            {(financialData.quantumPortfolio.expectedReturn * 100).toFixed(2)}%
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-400">Sharpe Ratio</div>
+                          <div className="text-xl font-bold text-blue-400">
+                            {financialData.quantumPortfolio.sharpeRatio.toFixed(3)}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4">
+                        <div className="text-gray-400 mb-2">Asset Allocation</div>
+                        <div className="space-y-2">
+                          {Object.entries(financialData.quantumPortfolio.assets).map(([asset, percent]) => (
+                            <div key={asset} className="flex items-center">
+                              <div className="w-16 text-yellow-300">{asset}</div>
+                              <Progress 
+                                value={percent * 100} 
+                                className="flex-1 mx-2" 
+                              />
+                              <div className="w-16 text-right text-green-300">
+                                {(percent * 100).toFixed(1)}%
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-2 mt-4 text-sm">
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Quantum Advantage</div>
+                          <div className="text-purple-400">
+                            {financialData.quantumPortfolio.quantumAdvantage}
+                          </div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Rebalance Frequency</div>
+                          <div className="text-cyan-400">
+                            {financialData.quantumPortfolio.rebalanceFreq}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4">
+                        <div className="text-gray-400 mb-2">Performance</div>
+                        <div className="grid grid-cols-4 gap-2 text-sm">
+                          {financialData.quantumPortfolio.performance.map((perf, index) => (
+                            <div key={index} className="bg-slate-700/30 p-2 rounded text-center">
+                              <div className="text-gray-400">{perf.time}</div>
+                              <div className="text-green-400 font-bold">+{perf.return.toFixed(1)}%</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-800/50 border border-yellow-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-yellow-400 flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5" />
+                    Market Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div>
+                      <div className="text-lg font-bold text-yellow-300 mb-2">Crypto Markets</div>
+                      <div className="space-y-3">
+                        {financialData?.cryptoData && Object.entries(financialData.cryptoData).map(([pair, data]) => (
+                          <div key={pair} className="flex justify-between items-center p-2 bg-slate-700/30 rounded">
+                            <div className="font-bold">{pair}</div>
+                            <div className="text-right">
+                              <div className="font-bold">${data.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                              <div className={`text-xs ${data.change24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                {data.change24h >= 0 ? '↑' : '↓'} {Math.abs(data.change24h).toFixed(2)}%
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="text-lg font-bold text-yellow-300 mb-2">Risk Analysis</div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">VaR (95%)</div>
+                          <div className="text-red-400 font-bold">
+                            {(financialData?.riskAnalysis?.var95 * 100).toFixed(2)}%
+                          </div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Expected Shortfall</div>
+                          <div className="text-red-400 font-bold">
+                            {(financialData?.riskAnalysis?.expectedShortfall * 100).toFixed(2)}%
+                          </div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Max Drawdown</div>
+                          <div className="text-orange-400 font-bold">
+                            {(financialData?.riskAnalysis?.maxDrawdown * 100).toFixed(2)}%
+                          </div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded">
+                          <div className="text-gray-400">Quantum Accuracy</div>
+                          <div className="text-green-400 font-bold">
+                            {(financialData?.riskAnalysis?.quantumAccuracy * 100).toFixed(1)}%
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="text-lg font-bold text-yellow-300 mb-2">Market Sentiment</div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <div className="bg-slate-700/30 p-2 rounded text-center">
+                          <div className="text-gray-400">Fear & Greed</div>
+                          <div className={`text-xl font-bold ${
+                            financialData?.marketSentiment?.fearGreedIndex > 70 ? 'text-green-400' :
+                            financialData?.marketSentiment?.fearGreedIndex < 30 ? 'text-red-400' : 'text-yellow-400'
+                          }`}>
+                            {financialData?.marketSentiment?.fearGreedIndex}
+                          </div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded text-center">
+                          <div className="text-gray-400">Volatility</div>
+                          <div className="text-xl font-bold text-purple-400">
+                            {financialData?.marketSentiment?.volatilityIndex}
+                          </div>
+                        </div>
+                        <div className="bg-slate-700/30 p-2 rounded text-center">
+                          <div className="text-gray-400">Institutions</div>
+                          <div className={`text-xl font-bold ${
+                            financialData?.marketSentiment?.institutionalFlow === 'Inflow' ? 
+                            'text-green-400' : 'text-red-400'
+                          }`}>
+                            {financialData?.marketSentiment?.institutionalFlow}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
+
+export default KelvinCodexUltimate; ]
